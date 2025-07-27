@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css');
+@import "tailwindcss";
+
+body {
+    font-family: "Urbanist", sans-serif;
+    font-weight: 500;
+    background-color: #D6E8EE;
+    overflow-x: hidden;
+}
+
+/* Custom scrollbar */
+.scrollbar-custom::-webkit-scrollbar {
+  width: 3px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background-color: #018ABE;
+  border-radius: 10px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background-color: #016a91;
+}
