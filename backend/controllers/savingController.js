@@ -1,6 +1,6 @@
 const User = require('../models/User');
 const moment = require('moment');
-const Savings = require('../models/Savings');
+const { Savings, Goals } = require('../models/Savings');
 
 exports.addSaving = async (req, res) => {
     const userId = req.user.id;
@@ -98,5 +98,90 @@ exports.deleteSaving = async (req, res) => {
         res.status(200).json({ message: 'Saving deleted Successfully!' });
     } catch(error) {
         res.status(500).json({ message: 'Server error' })
+    }
+}
+
+exports.addGoal = async (req, res) => {
+    const userId = req.user.id;
+
+    const { icon, name, total, input } = req.body;
+
+    if(!name || !total)
+        return res.status(400).json({ message: 'All fields are required' });
+
+    try {
+        const userGoal = await Goals.create({
+            userId,
+            icon,
+            name,
+            total,
+            input,
+        })
+        res.status(201).json({ message: 'Goal Added Successfully!'});
+    } catch(error) {
+        res.status(500).json({ message: 'Server Error' })
+    }
+}
+
+exports.editGoal = async (req, res) => {
+    const userId = req.user.id;
+    const { id } = req.params;
+
+    const { icon, name, total, input } = req.body;
+
+    if(!name || !total ) 
+        return res.status(400).json({ message: 'All fields are required' })
+
+    try {
+        const userGoal = await Goals.findOneAndUpdate(
+            {userId, _id: id},
+            {...req.body}, 
+            {new: true}
+        )
+        if(userGoal)
+            return res.status(200).json({ message: 'Goal Updated Successfully!'});
+        else
+            res.status(404).json({ message: 'Goal not found' });
+    } catch(error) {
+        res.status(500).json({ message: 'Server Error' })
+    }
+}
+
+exports.getAllGoals = async (req, res) => {
+    const userId = req.user.id;
+
+    try {
+        const goals = await Goals.find({ userId });
+        res.status(200).json({ goals });
+    } catch(error) {
+        res.status(500).json({ message: 'Server Error' });
+    }
+}
+
+exports.getGoal = async (req, res) => {
+    const userId = req.user.id;
+    const { id } = req.params;
+
+    try {
+        const goal = await Goals.findOne({ userId, _id: id });
+        if(!goal)
+            return res.status(404).json({ message: 'Goal not found' });
+        res.status(200).json({ goal });
+    } catch(error) {
+        res.status(500).json({ message: 'Server Error' })
+    }
+}
+
+exports.deleteGoal = async (req, res) => {
+    const userId = req.user.id;
+    const { id } = req.params;
+
+    try {
+        const deleted = await Goals.findOneAndDelete({ userId, _id: id });
+        if(!deleted)
+            return res.status(404).json({ message: 'Goal not found' });
+        res.status(200).json({ message: 'Goal Deleted Successfully!'});
+    } catch(error) {
+        res.status(500).json({ message: 'Server Error' });
     }
 }

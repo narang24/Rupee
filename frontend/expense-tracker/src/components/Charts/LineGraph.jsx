@@ -1,6 +1,6 @@
 import React from 'react'
 import { Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { useLineGraphData } from '../../utils/data'
+import { useLineGraphData, useSavingsGraphData } from '../../utils/data'
 
 const CustomLineDot = ({ cx, cy, payload, type }) => {
   if(cx && cy) {
@@ -20,7 +20,7 @@ const CustomLineDot = ({ cx, cy, payload, type }) => {
         <circle cx={cx} cy={cy} r={8} fill='#02457A' stroke='#fff' strokeWidth={3}/>
 
         {/* Tooltip text */}
-        <text fontSize='14' x={cx} y={cy-15} textAnchor="middle" fill="#02457A"><tspan fontWeight='700' fontSize='14' letterSpacing='0.025em'>₹ {(type==='expense'?payload.expense:payload.income).toString().split(".")[0].toLocaleString('en-IN')}</tspan><tspan fontWeight='600' fontSize='12'>.{(type==='expense'?payload.expense:payload.income).toString().split(".")[1] || '00'}</tspan></text>
+        <text fontSize='14' x={cx} y={cy-15} textAnchor="middle" fill="#02457A"><tspan fontWeight='700' fontSize='14' letterSpacing='0.025em'>₹ {(type==='savings'?payload.savings:(type==='expense'?payload.expense:payload.income)).toString().split(".")[0].toLocaleString('en-IN')}</tspan><tspan fontWeight='600' fontSize='12'>.{(type==='savings'?payload.savings:(type==='expense'?payload.expense:payload.income)).toString().split(".")[1] || '00'}</tspan></text>
 
       </g>
     )
@@ -29,7 +29,7 @@ const CustomLineDot = ({ cx, cy, payload, type }) => {
 
 
 const LineGraph = ({ type, value }) => {
-    const data = useLineGraphData(type,value);
+    const data = type==='savings'?useSavingsGraphData(value):useLineGraphData(type,value);
 
   return (
     <div className='pt-5'>

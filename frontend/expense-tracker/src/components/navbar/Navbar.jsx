@@ -4,10 +4,20 @@ import Tab from '../Tabs/Tab'
 import rupeeSign from '../../../public/rupee-sign.png'
 import { CiLogout } from "react-icons/ci";
 import { MdClose } from "react-icons/md";
+import { useLocation } from 'react-router-dom';
 
 const Navbar = ({ userData, setUserData, logout, open, setOpen}) => {
 
-  const [selectedTab, setSelectedTab] = useState('Overview');
+
+  const location = useLocation();
+  const currentPath = location.pathname.slice(1); 
+  const [selectedTab, setSelectedTab] = useState(currentPath || 'Overview');
+
+  useEffect(() => {
+    const updatedTab = location.pathname.slice(1) || 'Overview';
+    setSelectedTab(updatedTab);
+  }, [location]);
+
 
   return (
     <div className={`${open?"":"hidden"} md:inline h-screen w-65/100 md:w-1/7 z-20 md:z-0 bg-[#02457A] fixed left-0 transition-all`}>

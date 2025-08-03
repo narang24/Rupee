@@ -7,7 +7,7 @@ import axiosInstance from '../../utils/axiosInstance';
 import toast from 'react-hot-toast';
 import IncomeExpenseStats from '../../components/Inputs/IncomeExpenseStats';
 
-const Expenses = () => {
+const Income = () => {
 
   const [incomeData, setIncomeData] = useState(null);
   const [oldIncomeData, setOldIncomeData] = useState(null);
@@ -70,4 +70,4 @@ const Expenses = () => {
   )
 }
 
-export default Expenses
+export default Income

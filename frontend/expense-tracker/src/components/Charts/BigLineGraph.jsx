@@ -33,7 +33,7 @@ const CustomLineDot = ({ cx, cy, payload, type }) => {
 const CustomTooltip = ({ active, payload }) => {
     if(active && payload && payload.length ) {
         const item = payload[0];
-        const {income, expense} = item;
+        const {income, expense} = item.payload;
         
         return(
             <div className=' p-3 rounded-xl bg-[#02457A]/90'>

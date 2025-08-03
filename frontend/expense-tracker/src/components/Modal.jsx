@@ -47,12 +47,13 @@ const Modal = ({ type, closeModal, title, getExpenses, expenseToEdit }) => {
     setName('');
     setAmount('');
     setDate(new Date());
+    setFile(null);
     setError('');
   }
 
   const addExpense = async () => {
     if(!name) {
-      setError('Reciever is required');
+      setError(`${type=='Income' || type=='Savings'?'Source':'Reciever'} is required`);
       return;
     }
     if(!amount) {
@@ -95,7 +96,7 @@ const Modal = ({ type, closeModal, title, getExpenses, expenseToEdit }) => {
   const editExpense = async () => {
 
     if(!name) {
-      setError('Reciever is required')
+      setError(`${type=='Income' || type=='Savings'?'Source':'Reciever'} is required`);
       return;
     }
     if(!amount) {
@@ -141,40 +142,40 @@ const Modal = ({ type, closeModal, title, getExpenses, expenseToEdit }) => {
   return (
     <div className='fixed inset-0 z-50 flex justify-center items-center bg-black/50'>
       <div className='w-[85vw] md:w-[33vw] max-h-[88vh] bg-white overflow-y-auto rounded-xl shadow-md shadow-gray-700/50'>
-        <div className='flex justify-between items-center py-3 px-5 border-b-2 border-[#02457A]/50'>
+        <div className='flex justify-between items-center py-2.5 md:py-3 px-4.5 md:px-5 border-b-2 border-[#02457A]/50'>
             <div className='flex flex-col'>
-            <h3 className='text-semibold text-[#02457A] text-lg font-semibold'>{title}</h3>
-            <p className='text-sm tracking-wide text-[#02457A]/60'>Fill in the {type.toLowerCase()} details</p>
+            <h3 className='text-semibold text-[#02457A] md:text-lg font-semibold'>{title}</h3>
+            <p className='text-[13px] md:text-sm tracking-wide text-[#02457A]/60'>Fill in the {type.toLowerCase()} details</p>
             </div>
-            <button className='bg-[#02457A]/5 text-[#02457A] hover:bg-[#02457A] hover:text-white rounded-md p-2 cursor-pointer' onClick={closeModal}><AiOutlineClose/></button>
+            <button className='bg-[#02457A]/5 text-[#02457A] hover:bg-[#02457A] hover:text-white rounded-md p-1.5 md:p-2 cursor-pointer' onClick={closeModal}><AiOutlineClose/></button>
         </div>
 
         <div className=''>
         <IconSelector icon={icon} setIcon={setIcon}/>
-        <div className='grid grid-cols-2 gap-7 px-5 py-3'>
-            <InputBox title='Category' eg='Food' type='text' value={category} setValue={setCategory}/>
-            <InputBox title='Reciever' eg='Starbucks' type='text' value={name} setValue={setName}/>
+        <div className='grid grid-cols-2 gap-5 md:gap-7 px-4 md:px-5 py-2 md:py-3'>
+            <InputBox title='Category' eg={type==='Expense'?'Food':(type==='Income'?'Salary':'Investment')} type='text' value={category} setValue={setCategory}/>
+            <InputBox title={`${(type==='Income' || type==='Savings')?'Source':'Reciever'}`} eg={type==='Expense'?'Starbucks':(type==='Income'?'Wipro':'Stocks')} type='text' value={name} setValue={setName}/>
             <InputBox title='Amount' eg='1000' type='text' value={amount} setValue={setAmount}/>
             <InputBox title='Date' eg={`${new Date()}`} type='Date' value={date} setValue={setDate}/>
         </div>
         <input type='file' id='fileInput' className='hidden' onChange={(e) => setFile(e.target.files[0])}/>
-        <button className='w-11/12 max-h-full border-2 border-dashed border-[#02457A]/40 flex flex-col items-center justify-center gap-3 m-5 mb-4 px-4 py-6 text-[#02457A] rounded-xl cursor-pointer' onClick={() => document.getElementById('fileInput').click()}>
+        <button className='w-875/1000 md:w-11/12 max-h-full border-2 border-dashed border-[#02457A]/40 flex flex-col items-center justify-center gap-2 md:gap-3 m-5 mb-4 px-4 py-6 text-[#02457A] rounded-xl cursor-pointer' onClick={() => document.getElementById('fileInput').click()}>
             {((typeof file === 'string') || (file && typeof file === 'object' && file.type && (file.type.startsWith('image/'))))?
             <div className='flex gap-1'>
-            <img src={typeof file === 'string'? file: URL.createObjectURL(file)} alt='selected file' className='h-[100px] rounded-lg'/>
+            <img src={typeof file === 'string'? file: URL.createObjectURL(file)} alt='selected file' className='h-[90px] md:h-[100px] rounded-lg'/>
             {/* <button className='bg-[#02457A]/5 text-[#02457A] hover:bg-[#02457A] hover:text-white text-xl rounded-lg flex justify-center items-center cursor-pointer'><AiOutlineClose/></button> */}
             </div>
             :
             <>
             <FiUploadCloud className='text-xl text-[#02457A]/70'/>
-            <p className='text-sm font-bold '>Upload a file such as an Invoice</p>
-            <p className='text-sm text-[#02457A]/80'>or <span className='underline'>Click to browse</span></p>
+            <p className='text-[13px] md:text-sm font-bold '>Upload a file such as an Invoice</p>
+            <p className='text-[13px] md:text-sm text-[#02457A]/80'>or <span className='underline'>Click to browse</span></p>
             </>}
         </button>
-        {error && <p className='text-[13px] px-5 tracking-wide text-red-700'>*{error}</p>}
+        {error && <p className='text-[12px] md:text-[13px] px-5 tracking-wide text-red-700'>*{error}</p>}
         <div className='flex gap-2 justify-end items-center mx-5 mb-4'>
-            <button className='text-sm text-[#02457A] font-bold px-4 py-1.5 border-[2px] border-[#02457A]/40 rounded-md cursor-pointer' onClick={clearFields}>Clear</button>
-            <button className='text-sm text-white font-bold px-4 py-2 bg-[#02457A] rounded-md flex justify-center items-center gap-2 cursor-pointer' onClick={(title==='Add Expense' || title==='Add Income')?addExpense:editExpense}>Done <IoMdCheckmarkCircleOutline className='text-[16px]'/></button>
+            <button className='text-[13px] md:text-sm text-[#02457A] font-bold px-3 md:px-4 py-1 md:py-1.5 border-[2px] border-[#02457A]/40 rounded-md cursor-pointer' onClick={clearFields}>Clear</button>
+            <button className='text-[13px] md:text-sm text-white font-bold px-3 md:px-4 py-1.5 md:py-2 bg-[#02457A] rounded-md flex justify-center items-center gap-1 md:gap-2 cursor-pointer' onClick={(title==='Add Expense' || title==='Add Income' || title==='Add Savings')?addExpense:editExpense}>Done <IoMdCheckmarkCircleOutline className='text-[16px]'/></button>
         </div>
         </div>
 

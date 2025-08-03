@@ -26,3 +26,22 @@ body {
 .scrollbar-custom::-webkit-scrollbar-thumb:hover {
   background-color: #016a91;
 }
+
+/* Custom scrollbar 2 */
+.scrollbar-custom2::-webkit-scrollbar {
+  width: 3px;
+}
+
+.scrollbar-custom2::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-custom2::-webkit-scrollbar-thumb {
+  background-color: #02457A;
+  border-radius: 14px;
+  min-height: 40px;
+}
+
+.scrollbar-custom2::-webkit-scrollbar-thumb:hover {
+  background-color: #016a91;
+}

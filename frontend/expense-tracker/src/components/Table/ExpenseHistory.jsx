@@ -6,6 +6,7 @@ import { MdOutlineModeEdit } from "react-icons/md";
 import { MdDeleteOutline } from "react-icons/md";
 import { FaPlus } from "react-icons/fa";
 import Modal from '../Modal';
+import TemplateModal from '../TemplateModal';
 
 const ExpenseHistory = ({ type, expenseData, oldExpenseData, getExpenses, deleteExpense, }) => {
 
@@ -15,6 +16,8 @@ const ExpenseHistory = ({ type, expenseData, oldExpenseData, getExpenses, delete
   const [select, setSelect] = useState('recently');
   const [data, setData] = useState([]);
   const [expenseToEdit, setExpenseToEdit] = useState(null);
+
+  const [openTemplate, setOpenTemplate] = useState(false);
 
   useEffect(() => {
     setData(select==='recently'?expenseData:oldExpenseData)
@@ -56,7 +59,7 @@ const ExpenseHistory = ({ type, expenseData, oldExpenseData, getExpenses, delete
       <div className='grid grid-cols-1 gap-2 md:gap-4 p-2'>
 
       <div className='hidden md:flex px-2 py-1 text-left text-xs md:text-[16px]'>
-        <div className='w-25/100 md:w-30/100 text-[#02457A]/80'>Reciever</div>
+        <div className='w-25/100 md:w-30/100 text-[#02457A]/80'>{(type==='Income' || type==='Savings')?'Source':'Reciever'}</div>
         <div className='w-15/100 md:w-15/100  text-[#02457A]/80'>Type</div>
         <div className='w-25/100 md:w-20/100  text-[#02457A]/80'>Date</div>
         <div className='w-25/100 md:w-15/100 text-[#02457A]/80'>Amount</div>
@@ -69,12 +72,12 @@ const ExpenseHistory = ({ type, expenseData, oldExpenseData, getExpenses, delete
                 <div className='w-25/100 md:w-30/100 font-semibold text-[#02457A]/90'>{expense.icon} {expense.name}</div>
                 <div className='w-15/100 md:w-15/100  text-[#02457A]/70'>{expense.category}</div>
                 <div className='w-25/100 md:w-20/100  text-[#02457A]/70'>{expense.date}</div>
-                <div className={`w-25/100 md:w-15/100 font-bold ${type==='Income'?'text-green-700':'text-red-700'} flex items-center gap-1`}>₹{expense.amount}{type==='Income'?<IoIosTrendingUp />:<IoIosTrendingDown/>}</div>
+                <div className={`w-25/100 md:w-15/100 font-bold ${(type==='Income' || type==='Savings')?'text-green-700':'text-red-700'} flex items-center gap-1`}>₹{expense.amount}{(type==='Income' || type==='Savings')?<IoIosTrendingUp />:<IoIosTrendingDown/>}</div>
                 <a className='w-10/100 md:w-10/100 text-lg text-[#02457A] cursor-pointer hover:text-[#02457A]/75' href={expense.fileUrl || ''} target='_blank'><FiFileText /></a>
 
                 <div className='flex gap-5 items-center text-lg text-right'>
                   <button className='text-[#02457A] hover:text-[#02457A]/75 cursor-pointer' onClick={() => { handleModal('Edit'); getExpenseToEdit(expense); }}><MdOutlineModeEdit /></button>
-                  <button className='text-[#02457A] hover:text-[#02457A]/75 cursor-pointer'><FiDownload /></button>
+                  <button className='text-[#02457A] hover:text-[#02457A]/75 cursor-pointer' onClick={() => { setOpenTemplate(true); getExpenseToEdit(expense); }}><FiDownload /></button>
                   <button className='text-[#02457A] hover:text-red-700 cursor-pointer' onClick={() => deleteExpense(expense)}><MdDeleteOutline /></button>
                 </div>
 
@@ -89,16 +92,16 @@ const ExpenseHistory = ({ type, expenseData, oldExpenseData, getExpenses, delete
             <div className='flex justify-between items-end px-2 py-2.5 text-left border-b-2 border-[#02457A]/50'>
               
               <div className='flex flex-col justify-center items-start gap-0.5'>
-                <div className='text-[15px] font-semibold text-[#02457A]/90'><span className='text-sm font-semibold text-[#02457A]/90'>Reciever: </span>{expense.icon} {expense.name}</div>
+                <div className='text-[15px] font-semibold text-[#02457A]/90'><span className='text-sm font-semibold text-[#02457A]/90'>{(type==='Income' || type==='Savings')?'Source':'Reciever'}: </span>{expense.icon} {expense.name}</div>
                 <div className='text-[15px] text-[#02457A]/70'><span className='text-sm font-semibold text-[#02457A]/90'>Category: </span>{expense.category}</div>
                 <div className='text-[15px] text-[#02457A]/70'><span className='text-sm font-semibold text-[#02457A]/90'>Date: </span>{expense.date}</div>
-                <div className={`text-[15px] font-bold ${type==='Income'?'text-green-700':'text-red-700'} flex items-center gap-1`}><span className='text-sm font-semibold text-[#02457A]/90'>Amount: </span>₹{expense.amount}{type==='Income'?<IoIosTrendingUp />:<IoIosTrendingDown/>}</div>
+                <div className={`text-[15px] font-bold ${(type==='Income' || type==='Savings')?'text-green-700':'text-red-700'} flex items-center gap-1`}><span className='text-sm font-semibold text-[#02457A]/90'>Amount: </span>₹{expense.amount}{(type==='Income' || type==='Savings')?<IoIosTrendingUp />:<IoIosTrendingDown/>}</div>
                 <a className='flex text-lg text-[#02457A] cursor-pointer hover:text-[#02457A]/75' href={expense.fileUrl || ''} target='_blank'><span className='text-sm font-semibold text-[#02457A]/90'>File: </span><FiFileText  className='mx-1'/></a>
               </div>
 
               <div className='flex gap-3 items-center text-lg text-right'>
                 <button className='text-[#02457A] hover:text-[#02457A]/75 cursor-pointer' onClick={() => { handleModal('Edit'); getExpenseToEdit(expense); }}><MdOutlineModeEdit /></button>
-                <button className='text-[#02457A] hover:text-[#02457A]/75 cursor-pointer'><FiDownload /></button>
+                <button className='text-[#02457A] hover:text-[#02457A]/75 cursor-pointer' onClick={() => { setOpenTemplate(true); getExpenseToEdit(expense); }}><FiDownload /></button>
                 <button className='text-[#02457A] hover:text-red-700 cursor-pointer' onClick={() => deleteExpense(expense)}><MdDeleteOutline /></button>
                 <IoIosArrowUp className='text-lg text-[#02457A] hover:text-[#02457A]/75 cursor-pointer bg-[#02457A]/10 p-0.5 rounded-sm text-center' onClick={() => setIndexOpen(null)}/>
               </div>
@@ -112,7 +115,7 @@ const ExpenseHistory = ({ type, expenseData, oldExpenseData, getExpenses, delete
             <div key={index} className='flex md:hidden justify-between items-center px-1 py-1.5 text-left border-b-2 border-[#02457A]/30 text-[13px]'>
                 <div className='w-35/100 font-semibold text-[#02457A]/90'>{expense.icon} {expense.name}</div>
                 <div className='w-1/4 text-[#02457A]/70 text-xs'>{expense.date}</div>
-                <div className='w-1/4 font-bold text-red-700 flex items-center gap-1'>₹{expense.amount}<IoIosTrendingDown /></div>
+                <div className={`w-1/4 font-bold ${(type==='Income' || type==='Savings')?'text-green-700':' text-red-700'} flex items-center gap-1`}>₹{expense.amount}{(type==='Income' || type==='Savings')?<IoIosTrendingUp />:<IoIosTrendingDown/>}</div>
                 <IoIosArrowDown className='text-lg text-[#02457A] hover:text-[#02457A]/75 cursor-pointer bg-[#02457A]/10 p-0.5 rounded-sm text-center' onClick={() => setIndexOpen(index)}/>
             </div>
             </>
@@ -125,8 +128,15 @@ const ExpenseHistory = ({ type, expenseData, oldExpenseData, getExpenses, delete
       title={`${modal} ${type}`}
       closeModal={() => setOpenModal(!openModal)}
       getExpenses={getExpenses}
-      expenseToEdit={expenseToEdit}
+      expenseToEdit={modal==='Edit'?expenseToEdit:null}
       />}
+
+      {openTemplate && <TemplateModal
+      type={type}
+      closeModal={() => setOpenTemplate(!openTemplate)}
+      templateData={expenseToEdit}
+      />}
+      
     </div>
   )
 }

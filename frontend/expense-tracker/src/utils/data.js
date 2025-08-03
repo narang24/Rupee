@@ -8,12 +8,17 @@ const [loading, setLoading] = useState(true);
 
 const getTotals = async () => {
     try {
-        const response = await axiosInstance.get('/api/overview/totals');
-        const data = response.data;
+        const expenseResponse = await axiosInstance.get('/api/overview/expenseTotals');
+        const incomeResponse = await axiosInstance.get('/api/overview/incomeTotals');
+        const savingsResponse = await axiosInstance.get('/api/overview/savingsTotals');
+
+        const expenseData = expenseResponse.data;
+        const incomeData = incomeResponse.data;
+        const savingsData = savingsResponse.data;
 
         //Getting Card's Data
-        const balance = data.totalIncome - data.totalExpense;
-        const oneMonthBalance = data.oneMonthTotalIncome - data.oneMonthTotalExpense;
+        const balance = incomeData.totalIncome - expenseData.totalExpense;
+        const oneMonthBalance = incomeData.oneMonthTotalIncome - expenseData.oneMonthTotalExpense;
     
         const percentChange = (sum, oneMonthSum) => {
             if(oneMonthSum == 0) return 0;
@@ -34,24 +39,24 @@ const getTotals = async () => {
                 color1: '#018ABE',
                 color2: '#69ADFF',
                 name: 'Total Income',
-                value: data.totalIncome,
-                percent: percentChange(data.totalIncome, data.oneMonthTotalIncome)
+                value: incomeData.totalIncome,
+                percent: percentChange(incomeData.totalIncome, incomeData.oneMonthTotalIncome)
             },
             {
                 icon: 'sack-dollar',
                 color1: '#0E7C86',
                 color2: '#3FA1AA',
                 name: 'Total Expenses',
-                value: data.totalExpense,
-                percent: percentChange(data.totalExpense, data.oneMonthTotalExpense)
+                value: expenseData.totalExpense,
+                percent: percentChange(expenseData.totalExpense, expenseData.oneMonthTotalExpense)
             },
             {
                 icon: 'piggy-bank',
                 color1: '#0dbacc',
                 color2: '#B4F1F1',
                 name: 'Total Savings',
-                value: data.totalSaving,
-                percent: percentChange(data.totalSaving, data.oneMonthTotalSaving)
+                value: savingsData.totalSavings,
+                percent: percentChange(savingsData.totalSavings, savingsData.oneMonthTotalSavings)
             }
         ];
 
@@ -85,17 +90,19 @@ export const useStatsData = () => {
 
     const getGraphTotals = async () => {
     try {
-        const response = await axiosInstance.get('/api/overview/totals');
-        if(response.data) {
+        const expenseResponse = await axiosInstance.get('/api/overview/expenseTotals');
+        const incomeResponse = await axiosInstance.get('/api/overview/incomeTotals');
+
+        if(expenseResponse.data && incomeResponse.data) {
             setData({
-                totalIncome: response.data.totalIncome, 
-                totalExpense: response.data.totalExpense, 
-                categoryIncomeAgg: response.data.categoryIncomeAgg, 
-                categoryExpenseAgg: response.data.categoryExpenseAgg,
-                oneMonthTotalIncome: response.data.oneMonthTotalIncome,
-                oneMonthTotalExpense: response.data.oneMonthTotalExpense,
-                sixMonthsTotalIncome: response.data.sixMonthsTotalIncome,
-                sixMonthsTotalExpense: response.data.sixMonthsTotalExpense,
+                totalIncome: incomeResponse.data.totalIncome, 
+                totalExpense: expenseResponse.data.totalExpense, 
+                categoryIncomeAgg: incomeResponse.data.categoryIncomeAgg, 
+                categoryExpenseAgg: expenseResponse.data.categoryExpenseAgg,
+                oneMonthTotalIncome: incomeResponse.data.oneMonthTotalIncome,
+                oneMonthTotalExpense: expenseResponse.data.oneMonthTotalExpense,
+                sixMonthsTotalIncome: incomeResponse.data.sixMonthsTotalIncome,
+                sixMonthsTotalExpense: expenseResponse.data.sixMonthsTotalExpense,
             });
         }
     } catch(error) {
@@ -126,18 +133,20 @@ export const useLineGraphData = (type, value) => {
 
     const getTotals = async () => {
     try {
-        const response = await axiosInstance.get('/api/overview/totals');
-        if(response.data) {
+        const expenseResponse = await axiosInstance.get('/api/overview/expenseTotals');
+        const incomeResponse = await axiosInstance.get('/api/overview/incomeTotals');
+
+        if(expenseResponse.data && incomeResponse.data) {
         const newExpenseData=lastYear.map(month => ({ month, expense:0 }));
         const newIncomeData=lastYear.map(month => ({ month, income:0 }));
 
-        response.data.expenseAllMonthsTotals.forEach((item) => {
+        expenseResponse.data.expenseAllMonthsTotals.forEach((item) => {
         const monthName = months[item.month-1];
         const entry = newExpenseData.find(d => d.month === monthName);
         if(entry) entry.expense = item.total;
         })
 
-        response.data.incomeAllMonthsTotals.forEach((item) => {
+        incomeResponse.data.incomeAllMonthsTotals.forEach((item) => {
         const monthName = months[item.month-1];
         const entry = newIncomeData.find(d => d.month === monthName);
         if(entry) entry.income = item.total;
@@ -172,5 +181,52 @@ export const useLineGraphData = (type, value) => {
         
     },[type,value,incomeData,expenseData])
     
+    return graphData;
+}
+
+export const useSavingsGraphData = (value) => {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const lastYear = [];
+    const now = new Date();
+    
+    for(let i=11;i>=0;i--) {
+        const month = new Date(now.getFullYear(), now.getMonth()-i, 1);
+        lastYear.push({ month: months[month.getMonth()], savings: 0 });
+    }
+
+    const [graphData, setGraphData] = useState([]);
+    const [savingsData, setSavingsData] = useState([]);
+
+    const getData = async () => {
+        const response = await axiosInstance.get('/api/overview/savingsTotals');
+
+        if(response.data) {
+            setSavingsData(response.data.savingAllMonthsTotals);
+        }
+    }
+
+    const setData = () => {
+        if(savingsData.length>0) {
+            savingsData.forEach((item) => {
+                const entry = lastYear.find(d => d.month == months[item.month-1])
+                if(entry) {
+                entry.savings = item.total
+                }
+            })
+        }
+    }
+
+    useEffect(() => {
+        getData();
+    },[]);
+
+    useEffect(() => {
+        setData();
+        if(value==='six')
+            setGraphData(lastYear.slice(-6));
+        else
+            setGraphData(lastYear);
+    },[savingsData, value])
+
     return graphData;
 }

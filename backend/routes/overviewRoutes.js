@@ -1,9 +1,11 @@
 const express = require('express');
 const { protect } = require('../middleware/authMiddleware');
-const { getTotals } = require('../controllers/overviewController');
+const { getSavingsTotals, getIncomeTotals, getExpenseTotals } = require('../controllers/overviewController');
 
 const router = express.Router();
 
-router.get('/totals', protect, getTotals)
+router.get('/expenseTotals', protect, getExpenseTotals);
+router.get('/incomeTotals', protect, getIncomeTotals)
+router.get('/savingsTotals', protect, getSavingsTotals);
 
 module.exports = router;
